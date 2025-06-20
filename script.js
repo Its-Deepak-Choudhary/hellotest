@@ -1,150 +1,37 @@
-(() => {
-  const managerDistricts = {
-    "Rohit Kumar": ["Nalanda", "Banka", "Bhagalpur", "Jamui", "Khagaria", "Munger"],
-    "Dharmendra Kumar": ["Arwal", "Aurangabad", "Gaya", "Jehanabad", "Sitamarhi", "Sheohar", "Vaishali"],
-    "Shalu Kumari": ["Begusarai", "Katihar", "Kishanganj", "Araria", "Nawada", "Purnia"],
-    "Rahul Kumar": ["Bhojpur", "Buxar", "Kaimur", "Patna", "Rohtas", "Samastipur"],
-    "Vishwanath Singh": ["Darbhanga", "East Champaran", "Madhubani", "West Champaran"],
-    "Ritesh Kumar Rohit": ["Gopalganj", "Muzaffarpur", "Saran", "Siwan"],
-    "Markandey Shahi": ["Lakhisarai", "Madhepura", "Saharsa", "Sheikhpura", "Supaul"]
-  };
+function submitForm() {
+  const date = document.getElementById('date').value;
+  const manager = document.getElementById('manager').value;
+  const checkboxes = document.querySelectorAll('.district:checked');
+  
+  if (!date || checkboxes.length === 0) {
+    alert('Please select date and at least one district.');
+    return;
+  }
 
-  const managerSelect = document.getElementById('manager');
-  const districtContainer = document.getElementById('districtCheckboxes');
-  const form = document.getElementById('dataForm');
-  const msgDiv = document.getElementById('msg');
-  const scheduleDateInput = document.getElementById('schedule_date');
+  let entries = [];
 
-  managerSelect.addEventListener('change', () => {
-    const selectedManager = managerSelect.value;
-    districtContainer.innerHTML = '';
-
-    if (selectedManager && managerDistricts[selectedManager]) {
-      managerDistricts[selectedManager].forEach(district => {
-        const wrapper = document.createElement('div');
-        wrapper.className = 'district-container';
-
-        const checkbox = document.createElement('input');
-        checkbox.type = 'checkbox';
-        checkbox.value = district;
-        checkbox.id = `dist_${district.replace(/\s+/g, '_')}`;
-
-        const label = document.createElement('label');
-        label.htmlFor = checkbox.id;
-        label.textContent = district;
-        label.style.marginRight = '10px';
-        label.style.fontWeight = 'bold';
-        label.style.color = '#2c3e50';
-
-        const nameInput = document.createElement('input');
-        nameInput.type = 'text';
-        nameInput.placeholder = 'Manager Name';
-        nameInput.style.display = 'none';
-        nameInput.style.marginTop = '5px';
-
-        const phoneInput = document.createElement('input');
-        phoneInput.type = 'tel';
-        phoneInput.placeholder = '10 Digit Mobile';
-        phoneInput.style.display = 'none';
-        phoneInput.maxLength = 10;
-        phoneInput.pattern = "\\d{10}";
-        phoneInput.style.marginTop = '5px';
-
-        // Restrict phone input to 10 digit numbers only
-        phoneInput.addEventListener('input', () => {
-          phoneInput.value = phoneInput.value.replace(/\D/g, '').slice(0, 10);
-        });
-
-        checkbox.addEventListener('change', () => {
-          if (checkbox.checked) {
-            nameInput.style.display = 'block';
-            phoneInput.style.display = 'block';
-          } else {
-            nameInput.style.display = 'none';
-            phoneInput.style.display = 'none';
-            nameInput.value = '';
-            phoneInput.value = '';
-          }
-        });
-
-        wrapper.appendChild(checkbox);
-        wrapper.appendChild(label);
-        wrapper.appendChild(nameInput);
-        wrapper.appendChild(phoneInput);
-        districtContainer.appendChild(wrapper);
-      });
-    }
+  checkboxes.forEach(box => {
+    const district = box.value;
+    const name = document.getElementById('name_' + district).value;
+    const phone = document.getElementById('phone_' + district).value;
+    entries.push({ district, name, phone });
   });
 
-  form.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    msgDiv.textContent = '';
+  const data = { date, manager, entries };
 
-    const scheduleDate = scheduleDateInput.value;
-    const manager = managerSelect.value;
+  // Yeh hai aapka Google Apps Script Web App URL
+  const apiUrl = "https://script.google.com/macros/s/YOUR_DEPLOYED_URL/exec";
 
-    if (!manager) {
-      alert("Please select HQ Manager.");
-      return;
-    }
-    if (!scheduleDate) {
-      alert("Please select schedule date.");
-      return;
-    }
-
-    const districtsData = [];
-    let validationError = false;
-
-    districtContainer.querySelectorAll('.district-container').forEach(container => {
-      const checkbox = container.querySelector('input[type="checkbox"]');
-      const name = container.querySelector('input[type="text"]').value.trim();
-      const mobile = container.querySelector('input[type="tel"]').value.trim();
-
-      if (checkbox.checked) {
-        if (!name || !mobile) {
-          alert(`Please fill name and 10 digit mobile for ${checkbox.value}`);
-          validationError = true;
-          return;
-        }
-        if (mobile.length !== 10) {
-          alert(`Invalid mobile number for ${checkbox.value}. It must be 10 digits.`);
-          validationError = true;
-          return;
-        }
-        districtsData.push(`${checkbox.value} (${name}, ${mobile})`);
-      }
-    });
-
-    if (validationError) return;
-
-    if (districtsData.length === 0) {
-      alert("Please select at least one district and fill details.");
-      return;
-    }
-
-    const data = {
-      manager,
-      schedule_date: scheduleDate,
-      districts: districtsData.join(", ")
-    };
-
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbxsz_HL_r75rHHfck_f3YG-iCKgRsSRjNYsSoaUPolCJlXURYfGCOIw0fTKxTICYakaWA/exec';
-
-    try {
-      await fetch(scriptURL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
-      });
-
-      msgDiv.textContent = "✅ Data submitted successfully!";
-      msgDiv.style.color = 'green';
-      form.reset();
-      districtContainer.innerHTML = '';
-
-    } catch (error) {
-      msgDiv.textContent = `❌ Error: ${error}`;
-      msgDiv.style.color = 'red';
-    }
+  fetch(apiUrl, {
+    method: 'POST',
+    mode: 'no-cors',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data)
+  }).then(() => {
+    alert("Data saved successfully");
+    location.reload();
+  }).catch(err => {
+    console.error(err);
+    alert("Error while submitting form.");
   });
-})();
+}
