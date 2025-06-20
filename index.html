@@ -37,6 +37,7 @@
       <input type="tel" placeholder="Phone" id="phone_Begusarai">
     </div>
 
+    <!-- Repeat for other districts -->
     <div class="district-box">
       <label><input type="checkbox" class="district" value="Katihar"> Katihar</label>
       <input type="text" placeholder="Name" id="name_Katihar">
@@ -49,54 +50,11 @@
       <input type="tel" placeholder="Phone" id="phone_Kishanganj">
     </div>
 
-    <div class="district-box">
-      <label><input type="checkbox" class="district" value="Araria"> Araria</label>
-      <input type="text" placeholder="Name" id="name_Araria">
-      <input type="tel" placeholder="Phone" id="phone_Araria">
-    </div>
-
-    <div class="district-box">
-      <label><input type="checkbox" class="district" value="Nawada"> Nawada</label>
-      <input type="text" placeholder="Name" id="name_Nawada">
-      <input type="tel" placeholder="Phone" id="phone_Nawada">
-    </div>
-
-    <div class="district-box">
-      <label><input type="checkbox" class="district" value="Purnia"> Purnia</label>
-      <input type="text" placeholder="Name" id="name_Purnia">
-      <input type="tel" placeholder="Phone" id="phone_Purnia">
-    </div>
+    <!-- You can add more districts -->
   </div>
 
   <button onclick="submitForm()">Submit</button>
 
-  <script>
-    function submitForm() {
-      const date = document.getElementById('date').value;
-      const manager = document.getElementById('manager').value;
-      const checkboxes = document.querySelectorAll('.district:checked');
-      
-      if (!date || checkboxes.length === 0) {
-        alert('Please select date and at least one district.');
-        return;
-      }
-
-      let districts = [];
-      let entries = [];
-
-      checkboxes.forEach(box => {
-        const district = box.value;
-        const name = document.getElementById('name_' + district).value;
-        const phone = document.getElementById('phone_' + district).value;
-        districts.push(district);
-        entries.push({ district, name, phone });
-      });
-
-      google.script.run.withSuccessHandler(function(response) {
-        alert(response);
-        location.reload();
-      }).submitData({date, manager, districts, entries});
-    }
-  </script>
+  <script src="script.js"></script>
 </body>
 </html>
