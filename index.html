@@ -27,13 +27,12 @@
       font-weight: bold;
       color: #333;
     }
-    input[type="date"], select, input[type="text"], input[type="tel"] {
+    input, select {
       width: 100%;
       padding: 10px;
       margin-top: 5px;
       border: 1px solid #ccc;
       border-radius: 5px;
-      box-sizing: border-box;
     }
     .checkbox-group {
       display: flex;
@@ -45,12 +44,12 @@
       padding: 8px 10px;
       border-radius: 5px;
       display: flex;
-      align-items: center;
       flex-direction: column;
+      align-items: flex-start;
     }
-    button[type="submit"] {
+    button {
       margin-top: 20px;
-      padding: 12px 25px;
+      padding: 12px;
       background-color: #007BFF;
       color: white;
       font-weight: bold;
@@ -59,44 +58,25 @@
       cursor: pointer;
       width: 100%;
     }
-    button[type="submit"]:hover {
+    button:hover {
       background-color: #0056b3;
-    }
-    #msg {
-      margin-top: 20px;
-      font-weight: bold;
-      text-align: center;
-    }
-    @media (max-width: 600px) {
-      .container {
-        padding: 15px 20px;
-      }
-      button[type="submit"] {
-        padding: 10px;
-      }
     }
   </style>
 </head>
-
 <body>
   <div class="container">
     <h1>IT-PMU Team</h1>
-    <h2>बिहार मेडिकल सर्विसेज एंड इंफ्रास्ट्रक्चर कॉर्पोरेशन लि० (BMSICL) HIOMS अंतर्गत डाटा प्रविष्टि का दैनिक कार्यक्रम प्रतिवेदन</h2>
-
+    <h2>BMSICL HIOMS Data Entry Schedule</h2>
     <form id="dataForm">
-      <label for="schedule_date">Schedule Date:</label>
+      <label>Schedule Date:</label>
       <input type="date" id="schedule_date" required>
-
-      <label for="manager">HQ Manager:</label>
+      
+      <label>HQ Manager:</label>
       <select id="manager" required>
-        <option value="">-- Select Manager --</option>
+        <option value="">Select Manager</option>
         <option value="Rohit Kumar">Rohit Kumar</option>
-        <option value="Dharmendra Kumar">Dharmendra Kumar</option>
         <option value="Shalu Kumari">Shalu Kumari</option>
-        <option value="Rahul Kumar">Rahul Kumar</option>
-        <option value="Vishwanath Singh">Vishwanath Singh</option>
-        <option value="Ritesh Kumar Rohit">Ritesh Kumar Rohit</option>
-        <option value="Markandey Shahi">Markandey Shahi</option>
+        <option value="Dharmendra Kumar">Dharmendra Kumar</option>
       </select>
 
       <label>Districts:</label>
@@ -104,26 +84,20 @@
 
       <button type="submit">Submit</button>
     </form>
-
     <div id="msg"></div>
   </div>
 
   <script>
     const managerDistricts = {
-      "Rohit Kumar": ["Nalanda","Banka","Bhagalpur","Jamui","Khagaria","Munger"],
-      "Dharmendra Kumar": ["Arwal","Aurangabad","Gaya","Jehanabad","Sitamarhi","Sheohar","Vaishali"],
-      "Shalu Kumari": ["Begusarai","Katihar","Kishanganj","Araria","Nawada","Purnia"],
-      "Rahul Kumar": ["Bhojpur","Buxar","Kaimur","Patna","Rohtas","Samastipur"],
-      "Vishwanath Singh": ["Darbhanga","East Champaran","Madhubani","West Champaran"],
-      "Ritesh Kumar Rohit": ["Gopalganj","Muzaffarpur","Saran","Siwan"],
-      "Markandey Shahi": ["Lakhisarai","Madhepura","Saharsa","Sheikhpura","Supaul"]
+      "Rohit Kumar": ["Nalanda", "Banka", "Bhagalpur"],
+      "Shalu Kumari": ["Begusarai", "Katihar", "Purnia"],
+      "Dharmendra Kumar": ["Arwal", "Gaya", "Vaishali"]
     };
 
+    const form = document.getElementById('dataForm');
     const managerSelect = document.getElementById('manager');
     const districtContainer = document.getElementById('districtCheckboxes');
-    const form = document.getElementById('dataForm');
     const msgDiv = document.getElementById('msg');
-    const scheduleDateInput = document.getElementById('schedule_date');
 
     managerSelect.addEventListener('change', () => {
       const selectedManager = managerSelect.value;
@@ -132,8 +106,6 @@
       if (selectedManager && managerDistricts[selectedManager]) {
         managerDistricts[selectedManager].forEach(district => {
           const wrapper = document.createElement('div');
-          wrapper.className = 'district-container';
-
           const checkbox = document.createElement('input');
           checkbox.type = 'checkbox';
           checkbox.value = district;
@@ -141,73 +113,41 @@
           const label = document.createElement('label');
           label.textContent = district;
 
-          const nameInput = document.createElement('input');
-          nameInput.type = 'text';
-          nameInput.placeholder = 'Manager Name';
-          nameInput.style.display = 'none';
-
-          const phoneInput = document.createElement('input');
-          phoneInput.type = 'tel';
-          phoneInput.placeholder = 'Mobile (10 digits)';
-          phoneInput.maxLength = 10;
-          phoneInput.style.display = 'none';
-
-          checkbox.addEventListener('change', () => {
-            const show = checkbox.checked;
-            nameInput.style.display = show ? 'block' : 'none';
-            phoneInput.style.display = show ? 'block' : 'none';
-          });
-
           wrapper.appendChild(checkbox);
           wrapper.appendChild(label);
-          wrapper.appendChild(nameInput);
-          wrapper.appendChild(phoneInput);
-
           districtContainer.appendChild(wrapper);
         });
       }
     });
 
-    form.addEventListener('submit', (e) => {
-  e.preventDefault();
-  
-  const scheduleDate = scheduleDateInput.value;
-  const manager = managerSelect.value;
-  const districtsData = [];
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+      const selectedDistricts = [];
+      districtContainer.querySelectorAll('input[type="checkbox"]:checked').forEach(cb => {
+        selectedDistricts.push(cb.value);
+      });
 
-  districtContainer.querySelectorAll('.district-container').forEach(container => {
-    const checkbox = container.querySelector('input[type="checkbox"]');
-    const name = container.querySelector('input[type="text"]').value.trim();
-    const mobile = container.querySelector('input[type="tel"]').value.trim();
-    if (checkbox.checked) {
-      if (!name || !mobile) {
-        alert(`Please fill name and mobile for ${checkbox.value}`);
+      if (selectedDistricts.length === 0) {
+        alert("Please select at least one district.");
         return;
       }
-      districtsData.push(`${checkbox.value} (${name}, ${mobile})`);
-    }
-  });
 
-  const data = {
-    manager,
-    schedule_date: scheduleDate,
-    districts: districtsData.join(", ")
-  };
+      const data = {
+        manager: managerSelect.value,
+        schedule_date: document.getElementById('schedule_date').value,
+        districts: selectedDistricts.join(", ")
+      };
 
-  google.script.run
-    .withSuccessHandler(() => {
-      msgDiv.textContent = "✅ Data submitted successfully!";
-      msgDiv.style.color = 'green';
-      form.reset();
-      districtContainer.innerHTML = '';
-    })
-    .withFailureHandler((error) => {
-      msgDiv.textContent = `❌ Error: ${error}`;
-      msgDiv.style.color = 'red';
-    })
-    .doPost({postData: {contents: JSON.stringify(data)}});
-});
-
+      google.script.run.withSuccessHandler(() => {
+        msgDiv.textContent = "✅ Data submitted successfully!";
+        msgDiv.style.color = 'green';
+        form.reset();
+        districtContainer.innerHTML = '';
+      }).withFailureHandler(err => {
+        msgDiv.textContent = "❌ " + err;
+        msgDiv.style.color = 'red';
+      }).submitForm(data);
+    });
   </script>
 </body>
 </html>
