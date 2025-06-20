@@ -168,52 +168,46 @@
       }
     });
 
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      msgDiv.textContent = '';
+    form.addEventListener('submit', (e) => {
+  e.preventDefault();
+  
+  const scheduleDate = scheduleDateInput.value;
+  const manager = managerSelect.value;
+  const districtsData = [];
 
-      const scheduleDate = scheduleDateInput.value;
-      const manager = managerSelect.value;
-
-      if (!manager || !scheduleDate) {
-        alert("Please select manager and date");
+  districtContainer.querySelectorAll('.district-container').forEach(container => {
+    const checkbox = container.querySelector('input[type="checkbox"]');
+    const name = container.querySelector('input[type="text"]').value.trim();
+    const mobile = container.querySelector('input[type="tel"]').value.trim();
+    if (checkbox.checked) {
+      if (!name || !mobile) {
+        alert(`Please fill name and mobile for ${checkbox.value}`);
         return;
       }
+      districtsData.push(`${checkbox.value} (${name}, ${mobile})`);
+    }
+  });
 
-      const districtsData = [];
-      const containers = districtContainer.querySelectorAll('.district-container');
-      for (const container of containers) {
-        const checkbox = container.querySelector('input[type="checkbox"]');
-        const name = container.querySelector('input[type="text"]').value.trim();
-        const mobile = container.querySelector('input[type="tel"]').value.trim();
-        if (checkbox.checked) {
-          if (!name || !/^\d{10}$/.test(mobile)) {
-            alert(`Fill valid name & 10-digit mobile for ${checkbox.value}`);
-            return;
-          }
-          districtsData.push(`${checkbox.value} (${name}, ${mobile})`);
-        }
-      }
+  const data = {
+    manager,
+    schedule_date: scheduleDate,
+    districts: districtsData.join(", ")
+  };
 
-      if (districtsData.length === 0) {
-        alert("Select at least one district and fill details");
-        return;
-      }
+  google.script.run
+    .withSuccessHandler(() => {
+      msgDiv.textContent = "✅ Data submitted successfully!";
+      msgDiv.style.color = 'green';
+      form.reset();
+      districtContainer.innerHTML = '';
+    })
+    .withFailureHandler((error) => {
+      msgDiv.textContent = `❌ Error: ${error}`;
+      msgDiv.style.color = 'red';
+    })
+    .doPost({postData: {contents: JSON.stringify(data)}});
+});
 
-      const data = { manager, schedule_date: scheduleDate, districts: districtsData.join(", ") };
-
-      try {
-        const response = await google.script.run.withSuccessHandler(() => {
-          msgDiv.textContent = "✅ Data submitted!";
-          form.reset();
-          districtContainer.innerHTML = '';
-        }).withFailureHandler(err => {
-          msgDiv.textContent = `❌ Error: ${err}`;
-        }).doPost({ postData: { contents: JSON.stringify(data) } });
-      } catch (err) {
-        msgDiv.textContent = `❌ Error: ${err}`;
-      }
-    });
   </script>
 </body>
 </html>
