@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Schedule For Entry</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>IT-PMU Team</h1>
+    <h2>बिहार मेडिकल सर्विसेज एंड इंफ्रास्ट्रक्चर कॉर्पोरेशन लि० (BMSICL) HIOMS अंतर्गत डाटा प्रविष्टि का दैनिक कार्यक्रम प्रतिवेदन</h2>
+    
+    <form id="dataForm">
+      <label for="schedule_date">Schedule Date:</label>
+      <input type="date" id="schedule_date" required>
+
+      <label for="manager">HQ Manager:</label>
+      <select id="manager" required>
+        <option value="">-- Select Manager --</option>
+        <option value="Rohit Kumar">Rohit Kumar</option>
+        <option value="Dharmendra Kumar">Dharmendra Kumar</option>
+        <option value="Shalu Kumari">Shalu Kumari</option>
+        <option value="Rahul Kumar">Rahul Kumar</option>
+        <option value="Vishwanath Singh">Vishwanath Singh</option>
+        <option value="Ritesh Kumar Rohit">Ritesh Kumar Rohit</option>
+        <option value="Markandey Shahi">Markandey Shahi</option>
+      </select>
+
+      <label>Districts:</label>
+      <div id="districtCheckboxes" class="checkbox-group"></div>
+
+      <button type="submit">Submit</button>
+    </form>
+
+    <div id="msg"></div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
