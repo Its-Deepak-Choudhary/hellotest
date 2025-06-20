@@ -20,7 +20,7 @@ function submitForm() {
   const data = { date, manager, entries };
 
   // Yeh hai aapka Google Apps Script Web App URL
-  const apiUrl = "https://script.google.com/macros/s/YOUR_DEPLOYED_URL/exec";
+  const apiUrl = "https://script.google.com/macros/s/AKfycbxsz_HL_r75rHHfck_f3YG-iCKgRsSRjNYsSoaUPolCJlXURYfGCOIw0fTKxTICYakaWA/exec";
 
   fetch(apiUrl, {
     method: 'POST',
